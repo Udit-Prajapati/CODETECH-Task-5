@@ -1,0 +1,184 @@
+mysql> create database employeemanagementsystem;
+Query OK, 1 row affected (0.01 sec)
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+mysql> show databases;
++--------------------------+
+| Database                 |
++--------------------------+
+| banking                  |
+| employeemanagementsystem |
+| information_schema       |
+| library_db               |
+| librarydb                |
+| movierental              |
+| mysql                    |
+| mysql_python             |
+| performance_schema       |
+| studentrecordsmgmt       |
+| sys                      |
++--------------------------+
+11 rows in set (0.01 sec)
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+mysql> use employeemanagementsystem;
+Database changed
+mysql> create table departments(
+    -> ^C
+mysql> create table Departments(
+    -> DepartmentID INT AUTO_INCREMENT PRIMARY KEY,
+    -> DepartmentName VARCHAR(100) NOT NULL,
+    -> Location VARCHAR(100)
+    -> );
+Query OK, 0 rows affected (0.05 sec)
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+mysql> create table JobPositions(
+    -> PositionID INT AUTO_INCREMENT PRIMARY KEY,
+    -> Salary DECIMAL(10, 2) NOT NULL
+    -> );
+Query OK, 0 rows affected (0.04 sec)
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+mysql> CREATE TABLE Employees (
+    ->     EmployeeID INT AUTO_INCREMENT PRIMARY KEY,
+    ->     FirstName VARCHAR(100) NOT NULL,
+    ->     LastName VARCHAR(100) NOT NULL,
+    ->     DateOfBirth DATE,
+    ->     HireDate DATE,
+    ->     DepartmentID INT,
+    ->     PositionID INT,
+    ->     FOREIGN KEY (DepartmentID) REFERENCES Departments(DepartmentID),
+    ->     FOREIGN KEY (PositionID) REFERENCES JobPositions(PositionID)
+    -> );
+Query OK, 0 rows affected (0.06 sec)
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+mysql> insert into Departments (DepartmentName, Location) Values ('Hu
+man Resources','New York'),(Engineering','San Franciso'),('Sales','Ch
+icago'),('Marketing','Boston');
+    '> ^C
+mysql> INSERT INTO Departments (DepartmentName, Location) VALUES
+    -> ('Human Resources', 'New York'),
+    -> ('Engineering', 'San Francisco'),
+    -> ('Sales', 'Chicago'),
+    -> ('Marketing', 'Boston');
+Query OK, 4 rows affected (0.01 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+mysql> show tables;
++------------------------------------+
+| Tables_in_employeemanagementsystem |
++------------------------------------+
+| departments                        |
+| employees                          |
+| jobpositions                       |
++------------------------------------+
+3 rows in set (0.00 sec)
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+mysql> INSERT INTO JobPositions (PositionName, Salary) VALUES
+    -> ('Software Engineer', 85000.00),
+    -> ('HR Manager', 65000.00),
+    -> ('Sales Representative', 55000.00),
+    -> ('Marketing Specialist', 60000.00);
+ERROR 1054 (42S22): Unknown column 'PositionName' in 'field list'
+mysql> DESCRIBE JobPositions;
++------------+---------------+------+-----+---------+----------------+
+| Field      | Type          | Null | Key | Default | Extra          |
++------------+---------------+------+-----+---------+----------------+
+| PositionID | int           | NO   | PRI | NULL    | auto_increment |
+| Salary     | decimal(10,2) | NO   |     | NULL    |                |
++------------+---------------+------+-----+---------+----------------+
+2 rows in set (0.03 sec)
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+mysql> SELECT CONSTRAINT_NAME, TABLE_NAME
+    -> FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE
+    -> WHERE REFERENCED_TABLE_NAME = 'JobPositions';
++------------------+------------+
+| CONSTRAINT_NAME  | TABLE_NAME |
++------------------+------------+
+| employees_ibfk_2 | employees  |
++------------------+------------+
+1 row in set (0.03 sec)
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+mysql> ALTER TABLE Employees DROP FOREIGN KEY employees_ibfk_2;
+Query OK, 0 rows affected (0.07 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+mysql> DROP TABLE JobPositions;
+Query OK, 0 rows affected (0.03 sec)
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+mysql> CREATE TABLE JobPositions (
+    ->     PositionID INT AUTO_INCREMENT PRIMARY KEY,
+    ->     PositionName VARCHAR(100) NOT NULL,
+    ->     Salary DECIMAL(10, 2) NOT NULL
+    -> );
+Query OK, 0 rows affected (0.03 sec)
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+mysql> ALTER TABLE Employees ADD CONSTRAINT employees_ibfk_2
+    -> FOREIGN KEY (PositionID) REFERENCES JobPositions(PositionID);
+Query OK, 0 rows affected (0.05 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+mysql> INSERT INTO JobPositions (PositionName, Salary) VALUES
+    -> ('Software Engineer', 85000.00),
+    -> ('HR Manager', 65000.00),
+    -> ('Sales Representative', 55000.00),
+    -> ('Marketing Specialist', 60000.00);
+Query OK, 4 rows affected (0.01 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+mysql>
+mysql> INSERT INTO Employees (FirstName, LastName, DateOfBirth, HireDate, DepartmentID, PositionID) VALUES
+    -> ('John', 'Doe', '1985-03-15', '2010-06-01', 2, 1),
+    -> ('Jane', 'Smith', '1990-07-20', '2015-03-12', 1, 2),
+    -> ('Bob', 'Brown', '1982-11-05', '2008-09-25', 3, 3),
+    -> ('Alice', 'Johnson', '1995-05-18', '2020-01-14', 4, 4);
+Query OK, 4 rows affected (0.01 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+mysql> SELECT e.EmployeeID, e.FirstName, e.LastName, e.DateOfBirth, e.HireDate, d.DepartmentName, jp.PositionName, jp.Salary
+    -> FROM Employees e
+    -> JOIN Departments d ON e.DepartmentID = d.DepartmentID
+    -> JOIN JobPositions jp ON e.PositionID = jp.PositionID;
++------------+-----------+----------+-------------+------------+-----------------+----------------------+----------+
+| EmployeeID | FirstName | LastName | DateOfBirth | HireDate   | DepartmentName  | PositionName         | Salary   |
++------------+-----------+----------+-------------+------------+-----------------+----------------------+----------+
+|          1 | John      | Doe      | 1985-03-15  | 2010-06-01 | Engineering     | Software Engineer    | 85000.00 |
+|          2 | Jane      | Smith    | 1990-07-20  | 2015-03-12 | Human Resources | HR Manager           | 65000.00 |
+|          3 | Bob       | Brown    | 1982-11-05  | 2008-09-25 | Sales           | Sales Representative | 55000.00 |
+|          4 | Alice     | Johnson  | 1995-05-18  | 2020-01-14 | Marketing       | Marketing Specialist | 60000.00 |
++------------+-----------+----------+-------------+------------+-----------------+----------------------+----------+
+4 rows in set (0.00 sec)
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+mysql> SELECT e.FirstName, e.LastName, d.DepartmentName
+    -> FROM Employees e
+    -> JOIN Departments d ON e.DepartmentID = d.DepartmentID
+    -> WHERE d.DepartmentName = 'Engineering';
++-----------+----------+----------------+
+| FirstName | LastName | DepartmentName |
++-----------+----------+----------------+
+| John      | Doe      | Engineering    |
++-----------+----------+----------------+
+1 row in set (0.00 sec)
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+mysql> SELECT d.DepartmentName, SUM(jp.Salary) AS TotalSalaryExpense
+    -> FROM Employees e
+    -> JOIN Departments d ON e.DepartmentID = d.DepartmentID
+    -> JOIN JobPositions jp ON e.PositionID = jp.PositionID
+    -> GROUP BY d.DepartmentName;
++-----------------+--------------------+
+| DepartmentName  | TotalSalaryExpense |
++-----------------+--------------------+
+| Engineering     |           85000.00 |
+| Human Resources |           65000.00 |
+| Sales           |           55000.00 |
+| Marketing       |           60000.00 |
++-----------------+--------------------+
+4 rows in set (0.02 sec)
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+mysql> SELECT e.FirstName, e.LastName, e.HireDate
+    -> FROM Employees e
+    -> WHERE e.HireDate > '2015-01-01';
++-----------+----------+------------+
+| FirstName | LastName | HireDate   |
++-----------+----------+------------+
+| Jane      | Smith    | 2015-03-12 |
+| Alice     | Johnson  | 2020-01-14 |
++-----------+----------+------------+
+2 rows in set (0.01 sec)
